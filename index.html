@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SecureLogin v1.0</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Courier New', monospace;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .login-container {
+            background: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            width: 100%;
+            max-width: 400px;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 28px;
+            text-align: center;
+        }
+
+        .subtitle {
+            color: #666;
+            font-size: 12px;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #555;
+            font-weight: bold;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+            font-family: 'Courier New', monospace;
+            transition: border-color 0.3s;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .message {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 5px;
+            text-align: center;
+            font-weight: bold;
+            display: none;
+            animation: slideIn 0.3s ease-out;
+            word-wrap: break-word;
+            word-break: break-all;
+        }
+
+        .message.success {
+            background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+            color: #155724;
+            border: 3px solid #28a745;
+        }
+
+        .message.error {
+            background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
+            color: #721c24;
+            border: 3px solid #dc3545;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .hint {
+            margin-top: 20px;
+            padding: 10px;
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            border-radius: 5px;
+            font-size: 12px;
+            color: #856404;
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="login-container">
+        <h1>🔐 SecureLogin</h1>
+        <p class="subtitle">Challenge Level: Beginner</p>
+
+        <!-- 
+            DEVELOPMENT NOTES:
+            Default test credentials for staging:
+            Username: admin_user
+            Password (encrypted): QWRtMW5QQHNzMjAyNA==
+            Remember to remove before production!
+        -->
+
+        <form id="loginForm">
+
+            <div class="form-group">
+
+                <label for="username">Username:</label>
+                <input type="text" id="username" name="username" required>
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password:</label>
+                <input type="password" id="password" name="password" required data-hash="QWRtMW5QQHNzMjAyNA==">
+            </div>
+
+            <button type="submit">Login</button>
+        </form>
+
+        <div id="message" class="message"></div>
+
+        <div class="hint">
+            💡 Hint: Check the HTML source code carefully...
+        </div>
+    </div>
+
+    <!-- Security token: usr=admin_user -->
+
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const messageDiv = document.getElementById('message');
+
+            // Get credentials from HTML
+            const passwordInput = document.getElementById('password');
+            const encryptedPassword = passwordInput.getAttribute('data-hash');
+            const actualPassword = atob(encryptedPassword); // Decode Base64
+
+            // Extract username from HTML comments
+            const htmlSource = document.documentElement.outerHTML;
+            const usernameMatch = htmlSource.match(/usr=([a-zA-Z_]+)/);
+            const validUsername = usernameMatch ? usernameMatch[1] : '';
+
+            if (username === validUsername && password === actualPassword) {
+                messageDiv.className = 'message success';
+                messageDiv.innerHTML = `Correct! <br> Flag: CSC{HTML_c0mm3nts_4r3_n0t_s3cur3}`;
+                messageDiv.style.display = 'block';
+            } else {
+                messageDiv.className = 'message error';
+                messageDiv.textContent = 'Wrong!';
+                messageDiv.style.display = 'block';
+            }
+        });
+    </script>
+</body>
+
+</html>

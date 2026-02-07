@@ -1,0 +1,13 @@
+Challenge 1: 
+<!-- 
+            DEVELOPMENT NOTES:
+            Default test credentials for staging:
+            Username: admin_user
+            Password (encrypted): QWRtMW5QQHNzMjAyNA==
+            Remember to remove before production!
+        -->
+Flag: CSC{HTML_c0mm3nts_4r3_n0t_s3cur3}
+
+Challenge 2: 
+Encrypted Key: FVF{ERRWK_KRSSHU_FKDOOHQJH_PDVWHU}
+Decrypted Flag: CSC{Booth_Hopper_Challenge_Master}

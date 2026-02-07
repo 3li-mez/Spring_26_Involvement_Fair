@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CTF Flag Submission - Booth Hopper Challenge</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 600px;
+            width: 100%;
+        }
+
+        .header-banner {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 30px;
+            border-radius: 15px 15px 0 0;
+            text-align: center;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .header-banner h1 {
+            color: white;
+            font-size: 32px;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .challenge-name {
+            color: #f0f0f0;
+            font-size: 18px;
+            font-weight: 500;
+            letter-spacing: 1px;
+        }
+
+        .main-box {
+            background: white;
+            padding: 40px;
+            border-radius: 0 0 15px 15px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .challenge-info {
+            background: #f8f9fa;
+            border-left: 4px solid #667eea;
+            padding: 20px;
+            margin-bottom: 30px;
+            border-radius: 5px;
+        }
+
+        .challenge-info h2 {
+            color: #2c5364;
+            font-size: 20px;
+            margin-bottom: 15px;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .info-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .info-label {
+            font-weight: bold;
+            color: #555;
+        }
+
+        .info-value {
+            color: #667eea;
+            font-weight: 600;
+        }
+
+        .instructions {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+        }
+
+        .instructions h3 {
+            color: #856404;
+            margin-bottom: 12px;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .instructions ul {
+            margin-left: 20px;
+            color: #856404;
+            line-height: 1.8;
+        }
+
+        .instructions ul li {
+            margin-bottom: 8px;
+        }
+
+        .form-section {
+            margin-bottom: 25px;
+        }
+
+        .form-section label {
+            display: block;
+            margin-bottom: 10px;
+            color: #333;
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .flag-input {
+            width: 100%;
+            padding: 15px;
+            padding-left: 45px;
+            border: 3px solid #ddd;
+            border-radius: 8px;
+            font-size: 18px;
+            font-family: 'Courier New', monospace;
+            transition: all 0.3s;
+            background: #f8f9fa;
+        }
+
+        .flag-input:focus {
+            outline: none;
+            border-color: #667eea;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .flag-icon {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 20px;
+        }
+
+        .participant-input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        .participant-input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+        }
+
+        .submit-btn:active {
+            transform: translateY(0);
+        }
+
+        .message {
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+            text-align: center;
+            font-weight: bold;
+            display: none;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .message.success {
+            background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+            color: #155724;
+            border: 3px solid #28a745;
+        }
+
+        .message.error {
+            background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
+            color: #721c24;
+            border: 3px solid #dc3545;
+        }
+
+        .success-icon {
+            font-size: 50px;
+            margin-bottom: 15px;
+            animation: bounce 0.6s ease-in-out;
+        }
+
+        @keyframes bounce {
+
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.2);
+            }
+        }
+
+        .flag-display {
+            background: white;
+            padding: 15px;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            font-size: 20px;
+            color: #667eea;
+            margin: 15px 0;
+            border: 2px dashed #667eea;
+        }
+
+        .points-earned {
+            font-size: 24px;
+            color: #28a745;
+            margin-top: 10px;
+        }
+
+        .hint-box {
+            background: #e7f3ff;
+            border: 2px solid #2196F3;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+
+        .hint-box h4 {
+            color: #1976D2;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .hint-content {
+            color: #0d47a1;
+            line-height: 1.6;
+        }
+
+        .attempts-counter {
+            text-align: center;
+            color: #666;
+            font-size: 14px;
+            margin-top: 15px;
+        }
+
+        .decoder-tool {
+            background: #f0f4ff;
+            border: 2px solid #667eea;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+
+        .decoder-tool h4 {
+            color: #2c5364;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .decoder-input-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .decoder-input-group input {
+            flex: 1;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+        }
+
+        .decoder-input-group button {
+            padding: 10px 20px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .decoder-input-group button:hover {
+            background: #5568d3;
+        }
+
+        .decoder-output {
+            background: white;
+            padding: 15px;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            min-height: 50px;
+            color: #333;
+            border: 2px dashed #667eea;
+        }
+
+        .stats-footer {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 2px solid #eee;
+            text-align: center;
+            color: #666;
+            font-size: 14px;
+        }
+
+        @media (max-width: 600px) {
+            .header-banner h1 {
+                font-size: 24px;
+            }
+
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header-banner">
+            <h1>🚩 CTF Flag Submission</h1>
+            <p class="challenge-name">Challenge #2: The Booth Hopper</p>
+        </div>
+
+        <div class="main-box">
+            <div class="challenge-info">
+                <h2>📋 Challenge Information</h2>
+                <div class="info-grid">
+                    <div class="info-item">
+                        <span class="info-label">Difficulty:</span>
+                        <span class="info-value">Beginner</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Category:</span>
+                        <span class="info-value">Physical + Crypto</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Type:</span>
+                        <span class="info-value">Caesar Cipher</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="instructions">
+                <h3>📖 How to Submit</h3>
+                <ul>
+
+                    <li>Decrypt the Caesar Cipher message you received</li>
+                    <li>Enter the complete flag in the format: <code>CSC{...}</code></li>
+                    <li>Click "Submit Flag" to verify your answer</li>
+                </ul>
+            </div>
+
+            <form id="flagForm">
+
+
+                <div class="form-section">
+                    <label for="flagInput">🚩 Enter the Decrypted Flag:</label>
+                    <div class="input-wrapper">
+                        <span class="flag-icon">🔑</span>
+                        <input type="text" id="flagInput" class="flag-input" placeholder="CSC{...}" required
+                            autocomplete="off">
+                    </div>
+                </div>
+
+                <button type="submit" class="submit-btn">
+                    🎯 Submit Flag
+                </button>
+            </form>
+
+            <div id="message" class="message"></div>
+
+            <div class="attempts-counter" id="attemptsCounter">
+                Attempts: <span id="attempts">0</span>
+            </div>
+
+            <div class="hint-box">
+                <h4>💡 Need Help Decrypting?</h4>
+                <div class="hint-content">
+                    <strong>Caesar Cipher Hint:</strong> Shift each letter backward by 3 positions in the alphabet.
+                    <br>For example: D → A, E → B, F → C, etc.
+                    <br><br>
+                    Use the decoder tool below to help!
+                </div>
+            </div>
+
+            <div class="decoder-tool">
+                <h4>🔧 Caesar Cipher Decoder Tool</h4>
+                <div class="decoder-input-group">
+                    <input type="text" id="cipherText" placeholder="Paste your encrypted message here...">
+                    <button type="button" onclick="decodeCaesar()">Decode</button>
+                </div>
+                <div class="decoder-output" id="decoderOutput">
+                    Decoded message will appear here...
+                </div>
+            </div>
+
+            <div class="stats-footer">
+                <p>🎓 Cybersecurity Club CTF Event</p>
+                <p>Good luck, and happy hacking! 🔐</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let attempts = 0;
+        const correctFlag = "CSC{Booth_Hopper_Challenge_Master}";
+        const successfulSubmissions = new Set(); // Track who has submitted
+
+        document.getElementById('flagForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            const flagInput = document.getElementById('flagInput').value.trim();
+            const messageDiv = document.getElementById('message');
+
+            attempts++;
+            document.getElementById('attempts').textContent = attempts;
+
+            // Validate flag
+            if (flagInput === correctFlag) {
+                messageDiv.className = 'message success';
+                messageDiv.innerHTML = `Correct!`;
+                messageDiv.style.display = 'block';
+
+                // Log submission
+                console.log(`✅ SUCCESSFUL SUBMISSION: ${new Date().toISOString()}`);
+
+                // Disable form
+                document.getElementById('flagInput').disabled = true;
+                document.querySelector('.submit-btn').disabled = true;
+                document.querySelector('.submit-btn').style.opacity = '0.6';
+                document.querySelector('.submit-btn').style.cursor = 'not-allowed';
+
+            } else {
+                messageDiv.className = 'message error';
+                messageDiv.innerHTML = `Wrong!`;
+                messageDiv.style.display = 'block';
+
+                // Log failed attempt
+                console.log(`❌ FAILED ATTEMPT: Submitted: "${flagInput}"`);
+            }
+
+            // Scroll to message
+            messageDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        });
+
+
+
+        // Caesar Cipher Decoder Tool
+        function decodeCaesar() {
+            const cipherText = document.getElementById('cipherText').value;
+            const output = document.getElementById('decoderOutput');
+
+            if (!cipherText) {
+                output.textContent = 'Please enter text to decode!';
+                return;
+            }
+
+            let decoded = '';
+            for (let i = 0; i < cipherText.length; i++) {
+                let char = cipherText[i];
+
+                if (char.match(/[a-z]/i)) {
+                    const code = cipherText.charCodeAt(i);
+
+                    // Uppercase letters
+                    if (code >= 65 && code <= 90) {
+                        char = String.fromCharCode(((code - 65 - 3 + 26) % 26) + 65);
+                    }
+                    // Lowercase letters
+                    else if (code >= 97 && code <= 122) {
+                        char = String.fromCharCode(((code - 97 - 3 + 26) % 26) + 97);
+                    }
+                }
+
+                decoded += char;
+            }
+
+            output.textContent = decoded;
+        }
+
+        // Allow Enter key in decoder
+        document.getElementById('cipherText').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                decodeCaesar();
+            }
+        });
+
+        // Auto-format flag input
+        document.getElementById('flagInput').addEventListener('input', function (e) {
+            let value = e.target.value;
+
+            // Auto-add CTF{ if user starts typing without it
+            if (value.length > 0 && !value.startsWith('CSC{')) {
+                if (!value.startsWith('C')) {
+                    e.target.value = 'CSC{' + value;
+                }
+            }
+        });
+    </script>
+</body>
+
+</html>
